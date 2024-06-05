@@ -5,15 +5,6 @@ const spawn = require('cross-spawn');
 const chalk = require('chalk');
 
 //目的：通过yarn plugins安装插件 husky lint-staged commitlint prettier eslint
-//1.开启子进程安装插件
-//2.创建配置文件
-//3.配置package.json
-//4.配置husky
-//5.配置lint-staged
-//6.配置commitlint
-//7.配置prettier
-//8.配置eslint
-//9.配置vscode
 async function init() {
   const allDependencies = [
     'husky',
