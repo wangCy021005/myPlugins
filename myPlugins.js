@@ -43,6 +43,8 @@ async function createEslintConfig() {
   }
   //安装eslint解析器 todo 配置eslintrc.cjs
   spawn.sync('yarn', ['add', '-D', '@babel/core', '@babel/eslint-parser', 'eslint-config-alloy'], { stdio: 'inherit' });
+  //检查目录是否有eslint配置文件 eslint.cjs eslint.config.cjs 
+  const eslintConfigPath = path.resolve(process.cwd(), '.eslintrc.cjs');
   //todo 配置vite.config.js webpack.config.js
   console.log(chalk.green('eslint插件安装成功'));
 }
