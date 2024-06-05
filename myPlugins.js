@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const fs = require('fs-extra');
 const path = require('path');
 const spawn = require('cross-spawn');
@@ -86,12 +87,38 @@ async function vscodeSetting() {
 }
 async function createHuskyLintStagedConfig() {
   console.log(chalk.green('开始安装husky lint-staged'));
-  spawn.sync('yarn', ['add', 'D', 'husky', 'lint-staged'], { stdio: 'inherit' });
+  spawn.sync('yarn', ['add', '-D', 'husky', 'lint-staged'], { stdio: 'inherit' });
   //init husky
   console.log(chalk.green('安装成功'));
   console.log();
   console.log(chalk.green('开始初始化husky'));
-  spawn.sync('npx', ['husky', 'add', '.husky/pre-commit', '"npx lint-staged"'], { stdio: 'inherit' });
+  spawn.sync('npx', ['husky-init' ], { stdio: 'inherit' });
+  console.log(chalk.green('初始化成功'));
+  console.log();
+  //添加pre-commit
+  console.log(chalk.green('开始添加pre-commit'));
+  //写不进去，不知道为什么。自己手动添加吧
+  // spawn.sync('npx', ['husky', 'add', '.husky/pre-commit', '"npx lint-staged"'], { stdio: 'inherit' });
+  //获取husky配置文件
+  const huskyConfigPath = path.resolve(process.cwd(), '.husky/_/pre-commit');
+  const huskyConfigContent = fs.readFileSync(huskyConfigPath).toString();
+  //添加npx lint-staged
+  //将. "${0%/*}/h" 替换为 . "${dirname -- $0}/husky.sh"
+  fs.writeFileSync(huskyConfigPath, huskyConfigContent.replace('. "${0%/*}/h', '. "${dirname -- $0}/husky.sh'));
+  fs.writeFileSync(huskyConfigPath, huskyConfigContent + '\nnpx lint-staged\n');
+  console.log(chalk.green('pre-commit添加成功'));
+  console.log();
+  //添加commit-msg
+  console.log(chalk.green('开始添加commit-msg'));
+  // spawn.sync('npx', ['husky', 'add', '.husky/commit-msg', '"npx -- no -- commitlint --edit $1"'], { stdio: 'inherit' });
+  //获取husky配置文件
+  const commitMsgPath = path.resolve(process.cwd(), '.husky/_/commit-msg');
+  const commitMsgContent = fs.readFileSync(commitMsgPath).toString();
+  //添加npx -- no -- commitlint --edit $1
+  fs.writeFileSync(commitMsgPath, commitMsgContent.replace('. "${0%/*}/h', '. "${dirname -- $0}/husky.sh'));
+  fs.writeFileSync(commitMsgPath, commitMsgContent + '\nnpx --no --commitlint --edit $1\n');
+  console.log(chalk.green('commit-msg添加成功'));
+
   //配置package.json 添加husky lint-staged
   const packageJsonPath = path.resolve(process.cwd(), 'package.json');
   const packageJsonContent = fs.readJsonSync(packageJsonPath);
