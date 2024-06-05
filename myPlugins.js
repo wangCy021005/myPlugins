@@ -44,7 +44,6 @@ async function createEslintConfig() {
   //安装eslint解析器 todo 配置eslintrc.cjs
   spawn.sync('yarn', ['add', '-D', '@babel/core', '@babel/eslint-parser', 'eslint-config-alloy'], { stdio: 'inherit' });
   //检查目录是否有eslint配置文件 eslint.cjs eslint.config.cjs
-  const eslintConfigPath = path.resolve(process.cwd(), '.eslintrc.cjs','eslint.config.cjs','eslintrc.js','eslintrc.cjs');
   //todo 配置vite.config.js webpack.config.js
   console.log(chalk.green('eslint插件安装成功'));
 }
@@ -85,31 +84,30 @@ async function createHuskyLintStagedConfig() {
   console.log(chalk.green('安装成功'));
   console.log();
   console.log(chalk.green('开始初始化husky'));
-  spawn.sync('npx', ['husky-init' ], { stdio: 'inherit' });
+  spawn.sync('npx', ['husky-init'], { stdio: 'inherit' });
   console.log(chalk.green('初始化成功'));
   console.log();
   //添加pre-commit
   console.log(chalk.green('开始添加pre-commit'));
-  //写不进去，不知道为什么。自己手动添加吧
-  // spawn.sync('npx', ['husky', 'add', '.husky/pre-commit', '"npx lint-staged"'], { stdio: 'inherit' });
-  //获取husky配置文件
-  const huskyConfigPath = path.resolve(process.cwd(), '.husky/_/pre-commit');
+  //npx husky add .husky/pre-commit "npm exec lint-staged"
+  const command = 'npx husky add .husky/pre-commit';
+  spawn.sync('cmd.exe', ['/C', command], { stdio: 'inherit' });
+  const huskyConfigPath = path.resolve(process.cwd(), '.husky/pre-commit');
   const huskyConfigContent = fs.readFileSync(huskyConfigPath).toString();
-  //添加npx lint-staged
-  //将. "${0%/*}/h" 替换为 . "${dirname -- $0}/husky.sh"
-  fs.writeFileSync(huskyConfigPath, huskyConfigContent.replace('. "${0%/*}/h', '. "${dirname -- $0}/husky.sh'));
-  fs.writeFileSync(huskyConfigPath, huskyConfigContent + '\nnpx lint-staged\n');
+  fs.writeFileSync(huskyConfigPath, huskyConfigContent.replace('. "${0%/*}/h', '. "$(dirname -- $0)/_/husky.sh'));
+  fs.writeFileSync(huskyConfigPath, huskyConfigContent.replace('npm test', 'npm exec lint-staged'));
   console.log(chalk.green('pre-commit添加成功'));
   console.log();
   //添加commit-msg
   console.log(chalk.green('开始添加commit-msg'));
-  // spawn.sync('npx', ['husky', 'add', '.husky/commit-msg', '"npx -- no -- commitlint --edit $1"'], { stdio: 'inherit' });
+  //echo "npx commitlint --edit $1" > .husky/commit-msg
+  spawn.sync('cmd.exe', ['/C', 'echo "npx commitlint --edit $1" > .husky/commit-msg'], { stdio: 'inherit' });
   //获取husky配置文件
-  const commitMsgPath = path.resolve(process.cwd(), '.husky/_/commit-msg');
+  const commitMsgPath = path.resolve(process.cwd(), '.husky/commit-msg');
   const commitMsgContent = fs.readFileSync(commitMsgPath).toString();
   //添加npx -- no -- commitlint --edit $1
-  fs.writeFileSync(commitMsgPath, commitMsgContent.replace('. "${0%/*}/h', '. "${dirname -- $0}/husky.sh'));
-  fs.writeFileSync(commitMsgPath, commitMsgContent + '\nnpx --no --commitlint --edit $1\n');
+  const txt = '#! /usr/bin/env sh \n . "$(dirname "$0")/_/husky.sh" \n ';
+  fs.writeFileSync(commitMsgPath, txt + commitMsgContent);
   console.log(chalk.green('commit-msg添加成功'));
 
   //配置package.json 添加husky lint-staged
