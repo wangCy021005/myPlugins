@@ -41,10 +41,9 @@ async function createEslintConfig() {
   } else {
     spawn.sync('yarn', ['add', '-D', 'eslint-webpack-plugin'], { stdio: 'inherit' });
   }
-  //安装eslint解析器 todo 配置eslintrc.cjs
+  //安装eslint解析器
   spawn.sync('yarn', ['add', '-D', '@babel/core', '@babel/eslint-parser', 'eslint-config-alloy'], { stdio: 'inherit' });
   //检查目录是否有eslint配置文件 eslint.cjs eslint.config.cjs
-  //todo 配置vite.config.js webpack.config.js
   console.log(chalk.green('eslint插件安装成功'));
 }
 
@@ -100,13 +99,12 @@ async function createHuskyLintStagedConfig() {
   console.log();
   //添加commit-msg
   console.log(chalk.green('开始添加commit-msg'));
-  //echo "npx commitlint --edit $1" > .husky/commit-msg
   spawn.sync('cmd.exe', ['/C', 'echo npm exec commit-msg > .husky/commit-msg'], { stdio: 'inherit' });
   //获取husky配置文件
   const commitMsgPath = path.resolve(process.cwd(), '.husky/commit-msg');
   const commitMsgContent = fs.readFileSync(commitMsgPath).toString();
   //添加npx -- no -- commitlint --edit $1
-  const txt = '#! /usr/bin/env sh \n . "$(dirname "$0")/_/husky.sh" \n npx --no --commitlint --edit $1 \n';
+  const txt = '#! /usr/bin/env sh \n . "$(dirname "$0")/_/husky.sh" \n yarn commitlint --edit \n';
   fs.writeFileSync(commitMsgPath, txt + commitMsgContent);
   console.log(chalk.green('commit-msg添加成功'));
 
@@ -119,7 +117,7 @@ async function createHuskyLintStagedConfig() {
     },
   };
   packageJsonContent['lint-staged'] = {
-    '*.{js,ts,tsx,jsx}': ['eslint --fix', 'prettier --write', 'git add'],
+    '*.{js,ts,tsx,jsx}': ['eslint --fix', 'prettier --write'],
   };
   fs.writeJsonSync(packageJsonPath, packageJsonContent, { spaces: 2 });
   console.log(chalk.green('husky lint-staged配置成功'));
@@ -128,7 +126,7 @@ async function createHuskyLintStagedConfig() {
   console.log(chalk.green('开始配置commitlint'));
   spawn.sync(
     'cmd.exe',
-    ['/C', "echo module.exports = { extends: ['@commitlint/config-conventional'] }; > commitlint.config.js"],
+    ['/C', "echo module.exports = { extends: ['@commitlint/config-conventional'] }; > commitlint.config.cjs"],
     { stdio: 'inherit' }
   );
   console.log(chalk.green('所有插件配置完成，可以愉快的写代码了'));
