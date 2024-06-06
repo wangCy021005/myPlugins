@@ -101,12 +101,12 @@ async function createHuskyLintStagedConfig() {
   //添加commit-msg
   console.log(chalk.green('开始添加commit-msg'));
   //echo "npx commitlint --edit $1" > .husky/commit-msg
-  spawn.sync('cmd.exe', ['/C', 'echo "npm exec commit-msg" > .husky/commit-msg'], { stdio: 'inherit' });
+  spawn.sync('cmd.exe', ['/C', 'echo npm exec commit-msg > .husky/commit-msg'], { stdio: 'inherit' });
   //获取husky配置文件
   const commitMsgPath = path.resolve(process.cwd(), '.husky/commit-msg');
   const commitMsgContent = fs.readFileSync(commitMsgPath).toString();
   //添加npx -- no -- commitlint --edit $1
-  const txt = '#! /usr/bin/env sh \n . "$(dirname "$0")/_/husky.sh" \n ';
+  const txt = '#! /usr/bin/env sh \n . "$(dirname "$0")/_/husky.sh" \n npx --no --commitlint --edit $1 \n';
   fs.writeFileSync(commitMsgPath, txt + commitMsgContent);
   console.log(chalk.green('commit-msg添加成功'));
 
@@ -116,7 +116,6 @@ async function createHuskyLintStagedConfig() {
   packageJsonContent.husky = {
     hooks: {
       'pre-commit': 'lint-staged',
-      'commit-msg': 'commitlint -E HUSKY_GIT_PARAMS',
     },
   };
   packageJsonContent['lint-staged'] = {
