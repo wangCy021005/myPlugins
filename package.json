@@ -1,11 +1,14 @@
 {
-  "name": "myplugins",
+  "name": "plugins-cli",
   "version": "1.0.0",
-  "description": "",
+  "description": "commitlint + husky + lint-staged + eslint +prettier",
   "main": "index.js",
   "scripts": {
     "plugins": "node index.js ",
     "prepare": "husky install"
+  },
+  "bin":{
+    "plugins":"index.js"
   },
   "author": "",
   "license": "ISC",
