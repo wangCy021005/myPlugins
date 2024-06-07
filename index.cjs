@@ -1,2 +1,2 @@
-const module = require('./myPlugins');
-module.init();
+const {init} = require('./myPlugins');
+init()
