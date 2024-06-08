@@ -26,6 +26,8 @@ async function init() {
   await createPrettierConfig();
   await vscodeSetting();
   await createHuskyLintStagedConfig();
+  //安装完成后删除自身
+  await deleteSelf();
 }
 async function createEslintConfig() {
   //开启子进程
@@ -73,6 +75,10 @@ async function vscodeSetting() {
     "editor.rulers": [120],
     "editor.tabSize": 2
   }`;
+  //如果没有.vscode文件夹则创建
+  if (!fs.existsSync(path.resolve(process.cwd(), '.vscode'))) {
+    fs.mkdirSync(path.resolve(process.cwd(), '.vscode'));
+  }
   fs.writeFileSync(path.resolve(process.cwd(), '.vscode/settings.json'), vscodeSetting);
   console.log(chalk.green('vscode配置成功'));
 }
@@ -130,5 +136,15 @@ async function createHuskyLintStagedConfig() {
     { stdio: 'inherit' }
   );
   console.log(chalk.green('所有插件配置完成，可以愉快的写代码了'));
+}
+async function deleteSelf() {
+  //如果package.json中有plugins-cli则删除
+  const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+  const packageJsonContent = fs.readJsonSync(packageJsonPath);
+  if (packageJsonContent.devDependencies['plugins-cli']) {
+    console.log(chalk.green('开始删除plugins-cli'));
+    spawn.sync('yarn', ['remove', '-D', 'plugins-cli'], { stdio: 'inherit' });
+    console.log(chalk.green('plugins-cli删除成功'));
+  }
 }
 module.exports = { init };
