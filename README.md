@@ -4,4 +4,15 @@
 
 使用：
 
-npm install myPlugin
+首先在自己的项目package.json中的scripts添加
+
+````
+scripts:{
+"your_name":"plugins"
+}
+```
+````
+
+然后运行npm run your_name
+
+请注意，因为仓库中所有的命令是通过yarn来启动，所以有可能导致安装脚本后，用其他的如：pnpm/npm/cnpm 导致出现错误。
