@@ -2,13 +2,13 @@
   "name": "plugins-cli",
   "version": "1.0.3",
   "description": "commitlint + husky + lint-staged + eslint +prettier",
-  "main": "index.cjs",
+  "main": "./bin/index.cjs",
   "scripts": {
-    "plugins": "node index.cjs ",
+    "plugins": "node ./bin/index.cjs ",
     "prepare": "husky install"
   },
   "bin": {
-    "plugins": "index.cjs"
+    "plugins": "./bin/index.cjs"
   },
   "author": "",
   "license": "ISC",
